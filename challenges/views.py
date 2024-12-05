@@ -15,18 +15,15 @@ month_challenges = {
     "september": "Eat no sugar for the entire month!",
     "october": "Walk for at least 30 minutes every day!",
     "november": "Read a book for at least 40 minutes!",
-    "dicember": "Eat healthy"
+    "december": None
 }
 
 
 def menu(request):
     months = list(month_challenges.keys())
-    list_items = ""
-    for month in months:
-        month_path = reverse("month-challenge", args=[month])
-        list_items += f"<li><a href=\"{month_path}\">{
-            month.capitalize()}</a></li>"
-    return HttpResponse(f"<ul>{list_items}</ul>")
+    return render(request, "challenges/menu.html", {
+        "month_list": months
+    })
 
 
 def monthly_challenge_by_number(request, month):
@@ -40,8 +37,13 @@ def monthly_challenge_by_number(request, month):
 
 def monthly_challenge(request, month):
 
-    if month not in month_challenges:
+    try:
+        challenge_text = month_challenges[month]
+        return render(request, "challenges/challenge.html", {
+            "text": challenge_text,
+            "month": month
+        })
+    except:
         return HttpResponseNotFound("<h1>No challenges for the month :(</h1>")
 
-    respose_data = f"<h1>{month_challenges[month]}</h1>"
-    return HttpResponse(respose_data)
+    ## response_data = f"<h1>{month_challenges[month]}</h1>"#
